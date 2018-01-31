@@ -203,33 +203,38 @@ public class CrimeFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 BitmapDrawable drawable = (BitmapDrawable) mPhotoView.getDrawable();
-                Bitmap myBitmap = drawable.getBitmap();
+                if (isChecked){
+                    Bitmap myBitmap = drawable.getBitmap();
 
-                //Create a Paint object for drawing on
-                Paint myRectPaint = new Paint();
-                myRectPaint.setStrokeWidth(5);
-                myRectPaint.setColor(Color.RED);
-                myRectPaint.setStyle(Paint.Style.STROKE);
+                    //Create a Paint object for drawing on
+                    Paint myRectPaint = new Paint();
+                    myRectPaint.setStrokeWidth(5);
+                    myRectPaint.setColor(Color.RED);
+                    myRectPaint.setStyle(Paint.Style.STROKE);
 
-                //Create the canvas to draw on
-                Bitmap tempBitmap = Bitmap.createBitmap(myBitmap.getWidth(), myBitmap.getHeight(), Bitmap.Config.RGB_565);
-                Canvas tempCanvas = new Canvas(tempBitmap);
-                tempCanvas.drawBitmap(myBitmap, 0, 0, null);
+                    //Create the canvas to draw on
+                    Bitmap tempBitmap = Bitmap.createBitmap(myBitmap.getWidth(), myBitmap.getHeight(), Bitmap.Config.RGB_565);
+                    Canvas tempCanvas = new Canvas(tempBitmap);
+                    tempCanvas.drawBitmap(myBitmap, 0, 0, null);
 
-                //Detect the faces
-                Frame frame = new Frame.Builder().setBitmap(myBitmap).build();
-                SparseArray<Face> faces = detector.detect(frame);
+                    //Detect the faces
+                    Frame frame = new Frame.Builder().setBitmap(myBitmap).build();
+                    SparseArray<Face> faces = detector.detect(frame);
 
-                //Draw rectangles on the faces
-                for(int i=0; i<faces.size(); i++) {
-                    Face thisFace = faces.valueAt(i);
-                    float x1 = thisFace.getPosition().x;
-                    float y1 = thisFace.getPosition().y;
-                    float x2 = x1 + thisFace.getWidth();
-                    float y2 = y1 + thisFace.getHeight();
-                    tempCanvas.drawRoundRect(new RectF(x1, y1, x2, y2), 2, 2, myRectPaint);
+                    //Draw rectangles on the faces
+                    for(int i=0; i<faces.size(); i++) {
+                        Face thisFace = faces.valueAt(i);
+                        float x1 = thisFace.getPosition().x;
+                        float y1 = thisFace.getPosition().y;
+                        float x2 = x1 + thisFace.getWidth();
+                        float y2 = y1 + thisFace.getHeight();
+                        tempCanvas.drawRoundRect(new RectF(x1, y1, x2, y2), 2, 2, myRectPaint);
+                    }
+                    mPhotoView.setImageDrawable(new BitmapDrawable(getResources(),tempBitmap));
+                } else {
+                    updatePhotoView();
                 }
-                mPhotoView.setImageDrawable(new BitmapDrawable(getResources(),tempBitmap));
+
             }
         } );
 
