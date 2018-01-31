@@ -1,6 +1,7 @@
 package com.bignerdranch.android.criminalintent;
 
 import android.app.Activity;
+import android.app.FragmentTransaction;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -46,6 +47,7 @@ public class CrimeFragment extends Fragment {
     private CheckBox mSolvedCheckbox;
     private Button mReportButton;
     private Button mSuspectButton;
+    private Button mGalleryViewButton ;
     private ImageButton mPhotoButton;
     private ImageView mPhotoView;
 
@@ -108,6 +110,25 @@ public class CrimeFragment extends Fragment {
                         .newInstance(mCrime.getDate());
                 dialog.setTargetFragment(CrimeFragment.this, REQUEST_DATE);
                 dialog.show(manager, DIALOG_DATE);
+            }
+        });
+
+        /**
+         * Sam Huang, 01/31/2018
+         */
+        mGalleryViewButton = (Button) v.findViewById(R.id.gallery_view_button);
+        mGalleryViewButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            //    Intent intent = new Intent(this, ) ;
+
+                FragmentManager manager = getFragmentManager() ;
+                Fragment view = new GalleryView() ;
+                android.support.v4.app.FragmentTransaction transaction = manager.beginTransaction() ;
+                transaction.replace(R.id.replaceContainer, view) ;
+                transaction.commit();
+
             }
         });
 
