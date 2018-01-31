@@ -3,16 +3,20 @@ package com.bignerdranch.android.criminalintent;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.CursorWrapper;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
 
 import com.bignerdranch.android.criminalintent.database.CrimeBaseHelper;
 import com.bignerdranch.android.criminalintent.database.CrimeCursorWrapper;
 
+import com.bignerdranch.android.criminalintent.database.CrimeDbSchema;
 import com.bignerdranch.android.criminalintent.database.CrimeDbSchema.CrimeTable;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -57,6 +61,7 @@ public class CrimeLab {
         return crimes;
     }
 
+
     public Crime getCrime(UUID id) {
         CrimeCursorWrapper cursor = queryCrimes(
                 CrimeTable.Cols.UUID + " = ?",
@@ -75,7 +80,7 @@ public class CrimeLab {
         }
     }
 
-    public File getPhotoFile(Crime crime) {
+    public File getNewPhotoFile(Crime crime) {
         File externalFilesDir = mContext
                 .getExternalFilesDir(Environment.DIRECTORY_PICTURES);
 
@@ -83,7 +88,34 @@ public class CrimeLab {
             return null;
         }
 
-        return new File(externalFilesDir, crime.getPhotoFilename());
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+
+        return new File(externalFilesDir, "IMG_" + timeStamp + ".jpg");
+    }
+
+    public File getPrimaryPhotoFile(Crime crime) {
+        File externalFilesDir = mContext
+                .getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+
+        if (externalFilesDir == null) {
+            return null;
+        }
+        String currentPhoto = crime.getPhotoFilename();
+        if (currentPhoto == null || currentPhoto.isEmpty()) {
+            return null;
+        }
+
+        return new File(externalFilesDir, currentPhoto);
+    }
+
+    public void setPrimaryPhotoFile(Crime crime, String photo) {
+        crime.setPhotoFilename(photo);
+        updateCrime(crime);
+        String uuidString = crime.getId().toString();
+        ContentValues values = new ContentValues();
+        values.put(CrimeDbSchema.PhotoTable.Cols.CRIMEID, uuidString);
+        values.put(CrimeDbSchema.PhotoTable.Cols.PHOTO, photo);
+        mDatabase.insert(CrimeDbSchema.PhotoTable.NAME, null, values);
     }
 
     public void updateCrime(Crime crime) {
@@ -102,6 +134,7 @@ public class CrimeLab {
         values.put(CrimeTable.Cols.DATE, crime.getDate().getTime());
         values.put(CrimeTable.Cols.SOLVED, crime.isSolved() ? 1 : 0);
         values.put(CrimeTable.Cols.SUSPECT, crime.getSuspect());
+        values.put(CrimeTable.Cols.PHOTO, crime.getPhotoFilename());
 
         return values;
     }
@@ -118,5 +151,33 @@ public class CrimeLab {
         );
 
         return new CrimeCursorWrapper(cursor);
+    }
+
+    private CursorWrapper queryPhotos(String whereClause, String[] whereArgs) {
+        Cursor cursor = mDatabase.query(
+                CrimeDbSchema.PhotoTable.NAME,
+                null,
+                whereClause,
+                whereArgs,
+                null,
+                null,
+                null
+
+        );
+        return new CursorWrapper(cursor);
+    }
+
+
+    public List<String> getPhotos(UUID crimeUUID) {
+        List<String> photos = new ArrayList<>();
+
+        CursorWrapper cursor = queryPhotos(CrimeDbSchema.PhotoTable.Cols.CRIMEID + " = ?", new String[] {crimeUUID.toString()});
+
+        cursor.moveToFirst();
+        while(!cursor.isAfterLast()) {
+            photos.add(cursor.getString(cursor.getColumnIndex(CrimeDbSchema.PhotoTable.Cols.PHOTO)));
+        }
+
+        return photos;
     }
 }
