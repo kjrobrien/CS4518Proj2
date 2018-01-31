@@ -165,6 +165,10 @@ public class CrimeLab {
     public List<File> getPhotos(UUID crimeUUID) {
         List<File> photos = new ArrayList<>();
 
+        File external = mContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        Crime crime = getCrime(crimeUUID);
+        photos.add(new File(external, crime.getPhotoFilename()));
+
         CursorWrapper cursor = queryPhotos(CrimeDbSchema.PhotoTable.Cols.CRIMEID + " = ?", new String[] {crimeUUID.toString()});
 
         cursor.moveToFirst();
