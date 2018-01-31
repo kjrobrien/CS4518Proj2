@@ -168,14 +168,17 @@ public class CrimeLab {
     }
 
 
-    public List<String> getPhotos(UUID crimeUUID) {
-        List<String> photos = new ArrayList<>();
+    public List<File> getPhotos(UUID crimeUUID) {
+        List<File> photos = new ArrayList<>();
 
         CursorWrapper cursor = queryPhotos(CrimeDbSchema.PhotoTable.Cols.CRIMEID + " = ?", new String[] {crimeUUID.toString()});
 
         cursor.moveToFirst();
         while(!cursor.isAfterLast()) {
-            photos.add(cursor.getString(cursor.getColumnIndex(CrimeDbSchema.PhotoTable.Cols.PHOTO)));
+            File externalFilesDir = mContext
+                    .getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+            String filename = cursor.getString(cursor.getColumnIndex(CrimeDbSchema.PhotoTable.Cols.PHOTO));
+            photos.add(new File(externalFilesDir, filename));
         }
 
         return photos;
