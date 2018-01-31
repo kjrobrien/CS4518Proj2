@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/CS4518Proj2.iml" filepath="$PROJECT_DIR$/.idea/CS4518Proj2.iml" />
+      <module fileurl="file://C:\Users\Kevin O'Brien\Desktop\proj2\CriminalIntent\.idea\CS4518Proj2.iml" filepath="C:\Users\Kevin O'Brien\Desktop\proj2\CriminalIntent\.idea\CS4518Proj2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/CriminalIntent.iml" filepath="$PROJECT_DIR$/CriminalIntent.iml" />
       <module fileurl="file://C:\Users\quinn.averill\AndroidStudioProjects\CS4518Proj2\CriminalIntent.iml" filepath="C:\Users\quinn.averill\AndroidStudioProjects\CS4518Proj2\CriminalIntent.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://C:\Users\quinn.averill\AndroidStudioProjects\CS4518Proj2\app\app.iml" filepath="C:\Users\quinn.averill\AndroidStudioProjects\CS4518Proj2\app\app.iml" />

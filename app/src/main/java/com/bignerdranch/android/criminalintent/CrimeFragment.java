@@ -179,7 +179,12 @@ public class CrimeFragment extends Fragment {
         mPhotoButton.setEnabled(canTakePhoto);
 
         if (canTakePhoto) {
-            Uri uri = Uri.fromFile(mNewPhotoFile);
+            Uri uri;
+            if (mPhotoFile == null || !mPhotoFile.exists()) {
+                uri = Uri.fromFile(mPhotoFile);
+            } else {
+                uri = Uri.fromFile(mNewPhotoFile);
+            }
             captureImage.putExtra(MediaStore.EXTRA_OUTPUT, uri);
         }
 
@@ -272,9 +277,12 @@ public class CrimeFragment extends Fragment {
                 c.close();
             }
         } else if (requestCode == REQUEST_PHOTO) {
-            CrimeLab.get(getActivity()).setPrimaryPhotoFile(mCrime, mNewPhotoFile.getName());
-            mPhotoFile = mNewPhotoFile;
-            updatePhotoView();
+            if (mNewPhotoFile.exists()) {
+                CrimeLab.get(getActivity()).addPhoto(mCrime, mNewPhotoFile.getName());
+            } else {
+                updatePhotoView();
+            }
+
         }
     }
 

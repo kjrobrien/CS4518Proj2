@@ -101,16 +101,11 @@ public class CrimeLab {
             return null;
         }
         String currentPhoto = crime.getPhotoFilename();
-        if (currentPhoto == null || currentPhoto.isEmpty()) {
-            return null;
-        }
 
         return new File(externalFilesDir, currentPhoto);
     }
 
-    public void setPrimaryPhotoFile(Crime crime, String photo) {
-        crime.setPhotoFilename(photo);
-        updateCrime(crime);
+    public void addPhoto(Crime crime, String photo) {
         String uuidString = crime.getId().toString();
         ContentValues values = new ContentValues();
         values.put(CrimeDbSchema.PhotoTable.Cols.CRIMEID, uuidString);
@@ -134,7 +129,6 @@ public class CrimeLab {
         values.put(CrimeTable.Cols.DATE, crime.getDate().getTime());
         values.put(CrimeTable.Cols.SOLVED, crime.isSolved() ? 1 : 0);
         values.put(CrimeTable.Cols.SUSPECT, crime.getSuspect());
-        values.put(CrimeTable.Cols.PHOTO, crime.getPhotoFilename());
 
         return values;
     }
