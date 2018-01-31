@@ -14,8 +14,6 @@
         android:layout_marginRight="80dp">
 
 
-            >
-
 
             <ImageView android:id="@+id/GalleryImage1"
                 android:layout_width="80dp"
@@ -49,8 +47,6 @@
         android:orientation="vertical"
         android:layout_marginRight="80dp">
 
-
-        >
 
 
         <ImageView android:id="@+id/GalleryImage5"
@@ -91,7 +87,7 @@
         android:layout_marginRight="80dp">
 
 
-        >
+
 
 
         <ImageView android:id="@+id/GalleryImage9"
@@ -130,7 +126,7 @@
         android:orientation="vertical">
 
 
-        >
+
 
 
         <ImageView

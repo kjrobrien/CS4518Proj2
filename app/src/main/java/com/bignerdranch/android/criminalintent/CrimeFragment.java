@@ -121,13 +121,14 @@ public class CrimeFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-            //    Intent intent = new Intent(this, ) ;
+                Intent intent = new Intent(getActivity(), GalleryViewActivity.class) ;
+                startActivity(intent);
+                //FragmentManager manager = getFragmentManager() ;
+                //Fragment view = new GalleryView() ;
+                //android.support.v4.app.FragmentTransaction transaction = manager.beginTransaction() ;
+                //transaction.replace(R.id.replaceContainer, view) ;
+                //transaction.commit();
 
-                FragmentManager manager = getFragmentManager() ;
-                Fragment view = new GalleryView() ;
-                android.support.v4.app.FragmentTransaction transaction = manager.beginTransaction() ;
-                transaction.replace(R.id.replaceContainer, view) ;
-                transaction.commit();
 
             }
         });
