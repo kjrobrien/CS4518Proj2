@@ -21,6 +21,7 @@ import android.support.v4.app.FragmentManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -79,7 +80,7 @@ public class CrimeFragment extends Fragment {
         UUID crimeId = (UUID) getArguments().getSerializable(ARG_CRIME_ID);
         mCrime = CrimeLab.get(getActivity()).getCrime(crimeId);
         mPhotoFile = CrimeLab.get(getActivity()).getPrimaryPhotoFile(mCrime);
-        mNewPhotoFile = CrimeLab.get(getActivity()).getNewPhotoFile(mCrime);
+        mNewPhotoFile = CrimeLab.get(getActivity()).getNewPhotoFile();
         detector = new FaceDetector.Builder(getActivity())
                 .setTrackingEnabled(false)
                 .setLandmarkType(FaceDetector.ALL_LANDMARKS)
@@ -98,6 +99,8 @@ public class CrimeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_crime, container, false);
+
+        mFaceDetectionCheckox = (CheckBox) v.findViewById(R.id.faceDetectionCheckBox);
 
         mTitleField = (EditText) v.findViewById(R.id.crime_title);
         mTitleField.setText(mCrime.getTitle());
@@ -140,14 +143,13 @@ public class CrimeFragment extends Fragment {
             public void onClick(View v) {
 
                 Intent intent = new Intent(getActivity(), GalleryViewActivity.class) ;
+                intent.putExtra("uuid", mCrime.getId().toString());
+                String checkboxBool = "false";
+                if (mFaceDetectionCheckox.isChecked()){
+                    checkboxBool = "true";
+                }
+                intent.putExtra("checkBox", checkboxBool);
                 startActivity(intent);
-                //FragmentManager manager = getFragmentManager() ;
-                //Fragment view = new GalleryView() ;
-                //android.support.v4.app.FragmentTransaction transaction = manager.beginTransaction() ;
-                //transaction.replace(R.id.replaceContainer, view) ;
-                //transaction.commit();
-
-
             }
         });
 
@@ -201,13 +203,22 @@ public class CrimeFragment extends Fragment {
         mPhotoButton.setEnabled(canTakePhoto);
 
         if (canTakePhoto) {
-            Uri uri = Uri.fromFile(mNewPhotoFile);
-            captureImage.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+
         }
 
         mPhotoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Uri uri;
+                Log.d("test_count", String.valueOf(CrimeLab.get(getActivity()).countPhotos(mCrime)));
+                if (CrimeLab.get(getActivity()).countPhotos(mCrime) > 0) {
+                    uri = Uri.fromFile(mNewPhotoFile);
+                    CrimeLab.get(getActivity()).addPhoto(mCrime, mNewPhotoFile.getPath());
+                } else {
+                    uri = Uri.fromFile(mPhotoFile);
+                    CrimeLab.get(getActivity()).addPhoto(mCrime, mPhotoFile.getPath());
+                }
+                captureImage.putExtra(MediaStore.EXTRA_OUTPUT, uri);
                 startActivityForResult(captureImage, REQUEST_PHOTO);
             }
         });
@@ -215,7 +226,6 @@ public class CrimeFragment extends Fragment {
         mPhotoView = (ImageView) v.findViewById(R.id.crime_photo);
         updatePhotoView();
 
-        mFaceDetectionCheckox = (CheckBox) v.findViewById(R.id.faceDetectionCheckBox);
         mFaceDetectionCheckox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -250,6 +260,7 @@ public class CrimeFragment extends Fragment {
                     mPhotoView.setImageDrawable(new BitmapDrawable(getResources(),tempBitmap));
                 } else {
                     updatePhotoView();
+
                 }
 
             }
@@ -299,9 +310,8 @@ public class CrimeFragment extends Fragment {
                 c.close();
             }
         } else if (requestCode == REQUEST_PHOTO) {
-            CrimeLab.get(getActivity()).setPrimaryPhotoFile(mCrime, mNewPhotoFile.getName());
-            mPhotoFile = mNewPhotoFile;
             updatePhotoView();
+            mNewPhotoFile = CrimeLab.get(getActivity()).getNewPhotoFile();
         }
     }
 

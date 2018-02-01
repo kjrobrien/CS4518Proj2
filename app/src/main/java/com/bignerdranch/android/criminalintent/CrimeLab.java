@@ -80,7 +80,7 @@ public class CrimeLab {
         }
     }
 
-    public File getNewPhotoFile(Crime crime) {
+    public File getNewPhotoFile() {
         File externalFilesDir = mContext
                 .getExternalFilesDir(Environment.DIRECTORY_PICTURES);
 
@@ -101,16 +101,11 @@ public class CrimeLab {
             return null;
         }
         String currentPhoto = crime.getPhotoFilename();
-        if (currentPhoto == null || currentPhoto.isEmpty()) {
-            return null;
-        }
 
         return new File(externalFilesDir, currentPhoto);
     }
 
-    public void setPrimaryPhotoFile(Crime crime, String photo) {
-        crime.setPhotoFilename(photo);
-        updateCrime(crime);
+    public void addPhoto(Crime crime, String photo) {
         String uuidString = crime.getId().toString();
         ContentValues values = new ContentValues();
         values.put(CrimeDbSchema.PhotoTable.Cols.CRIMEID, uuidString);
@@ -134,7 +129,6 @@ public class CrimeLab {
         values.put(CrimeTable.Cols.DATE, crime.getDate().getTime());
         values.put(CrimeTable.Cols.SOLVED, crime.isSolved() ? 1 : 0);
         values.put(CrimeTable.Cols.SUSPECT, crime.getSuspect());
-        values.put(CrimeTable.Cols.PHOTO, crime.getPhotoFilename());
 
         return values;
     }
@@ -168,19 +162,33 @@ public class CrimeLab {
     }
 
 
-    public List<File> getPhotos(UUID crimeUUID) {
-        List<File> photos = new ArrayList<>();
+    public List<String> getPhotos(UUID crimeUUID) {
+        List<String> photos = new ArrayList<>();
+
 
         CursorWrapper cursor = queryPhotos(CrimeDbSchema.PhotoTable.Cols.CRIMEID + " = ?", new String[] {crimeUUID.toString()});
 
         cursor.moveToFirst();
         while(!cursor.isAfterLast()) {
+            /*
             File externalFilesDir = mContext
                     .getExternalFilesDir(Environment.DIRECTORY_PICTURES);
             String filename = cursor.getString(cursor.getColumnIndex(CrimeDbSchema.PhotoTable.Cols.PHOTO));
-            photos.add(new File(externalFilesDir, filename));
+            photos.add(new File(externalFilesDir, filename));*/
+
+            String filename = cursor.getString(cursor.getColumnIndex(CrimeDbSchema.PhotoTable.Cols.PHOTO));
+            photos.add(filename);
+            cursor.moveToNext();
         }
 
+        cursor.close();
+
         return photos;
+    }
+
+    public int countPhotos(Crime crime) {
+
+        CursorWrapper cursor = queryPhotos(CrimeDbSchema.PhotoTable.Cols.CRIMEID + " = ?", new String[] {crime.getId().toString()});
+        return cursor.getCount();
     }
 }

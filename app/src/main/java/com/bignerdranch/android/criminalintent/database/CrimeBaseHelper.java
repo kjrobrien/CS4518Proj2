@@ -24,8 +24,7 @@ public class CrimeBaseHelper extends SQLiteOpenHelper {
                 CrimeTable.Cols.TITLE + ", " +
                 CrimeTable.Cols.DATE + ", " +
                 CrimeTable.Cols.SUSPECT + ", " +
-                CrimeTable.Cols.SOLVED + ", " +
-                CrimeTable.Cols.PHOTO +
+                CrimeTable.Cols.SOLVED +
                 ")"
         );
         db.execSQL("create table " + CrimeDbSchema.PhotoTable.NAME + "(" +
